@@ -75,7 +75,7 @@ The service uses environment variables for configuration:
 
 - `WATCH_DIR` (required) - Directory to watch for new screenshot images
 - `DATABASE_URL` (required) - PostgreSQL connection string (e.g., `postgres://user:pass@localhost/dbname?sslmode=disable`)
-- `PORT` (optional, default: 8080) - HTTP server port
+- `PORT` (optional, default: 3000) - HTTP server port
 - `MIGRATE_ON_START` (optional, default: true) - Run database migrations on startup
 - `PROCESSED_DIR` (optional) - Directory to move successfully processed images
 - `FAILED_DIR` (optional) - Directory to move images that failed to process
