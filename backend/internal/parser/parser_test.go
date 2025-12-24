@@ -497,110 +497,100 @@ func TestParseImage_TestImages(t *testing.T) {
 		filepath string
 		validate func(*testing.T, *db.CreateScoreData)
 	}{
-		// {
-		// 	name:     "test-top-left",
-		// 	filepath: "../../../testdata/images/test-top-left.png",
-		// 	validate: func(t *testing.T, data *db.CreateScoreData) {
-		// 		// Should extract artist, song, charter from top-left
-		// 		assert.NotEmpty(t, data.Artist, "Should extract artist from top-left")
-		// 		assert.NotEmpty(t, data.SongName, "Should extract song name from top-left")
-		// 	},
-		// },
-		// {
-		// 	name:     "test-center",
-		// 	filepath: "../../../testdata/images/test-center.png",
-		// 	validate: func(t *testing.T, data *db.CreateScoreData) {
-		// 		// Should extract score and stars from center
-		// 		// Note: OCR may not always extract perfectly, so we just check structure
-		// 		assert.NotNil(t, data, "Should parse center image")
-		// 	},
-		// },
-		// {
-		// 	name:     "test-players",
-		// 	filepath: "../../../testdata/images/test-players.png",
-		// 	validate: func(t *testing.T, data *db.CreateScoreData) {
-		// 		// Should extract player data
-		// 		assert.Greater(t, len(data.Players), 0, "Should extract at least one player")
-		// 	},
-		// },
-		// {
-		// 	name:     "test-numbers",
-		// 	filepath: "../../../testdata/images/test-numbers.png",
-		// 	validate: func(t *testing.T, data *db.CreateScoreData) {
-		// 		// Should handle various number formats
-		// 		assert.NotNil(t, data, "Should parse numbers image")
-		// 	},
-		// },
-		// {
-		// 	name:     "test-difficulty",
-		// 	filepath: "../../../testdata/images/test-difficulty.png",
-		// 	validate: func(t *testing.T, data *db.CreateScoreData) {
-		// 		// Should extract difficulty information
-		// 		assert.NotNil(t, data, "Should parse difficulty image")
-		// 	},
-		// },
-		// {
-		// 	name:     "test-percentages",
-		// 	filepath: "../../../testdata/images/test-percentages.png",
-		// 	validate: func(t *testing.T, data *db.CreateScoreData) {
-		// 		// Should extract percentage values
-		// 		assert.NotNil(t, data, "Should parse percentages image")
-		// 	},
-		// },
-		// {
-		// 	name:     "test-complete",
-		// 	filepath: "../../../testdata/images/test-complete.png",
-		// 	validate: func(t *testing.T, data *db.CreateScoreData) {
-		// 		// Should extract all elements
-		// 		assert.NotEmpty(t, data.Artist, "Should extract artist")
-		// 		assert.NotEmpty(t, data.SongName, "Should extract song name")
-		// 		assert.NotNil(t, data.TotalScore, "Should extract total score")
-		// 		assert.Greater(t, len(data.Players), 0, "Should extract players")
-		// 	},
-		// },
-		// {
-		// 	name:     "test-stars",
-		// 	filepath: "../../../testdata/images/test-stars.png",
-		// 	validate: func(t *testing.T, data *db.CreateScoreData) {
-		// 		// Should extract star information
-		// 		assert.NotNil(t, data, "Should parse stars image")
-		// 	},
-		// // },
-		// {
-		// 	name:     "test-misses",
-		// 	filepath: "../../../testdata/images/test-misses.png",
-		// 	validate: func(t *testing.T, data *db.CreateScoreData) {
-		// 		// Should extract miss information
-		// 		assert.NotNil(t, data, "Should parse misses image")
-		// 	},
-		// },
 		{
-			name:     "test-misses real",
-			filepath: "../../../testdata/scores/clonehero-Tripping-Billies-20251209195440.png",
+			name:     "test-top-left",
+			filepath: "../../../testdata/images/test-top-left.png",
+			validate: func(t *testing.T, data *db.CreateScoreData) {
+				// Should extract artist, song, charter from top-left
+				assert.NotEmpty(t, data.Artist, "Should extract artist from top-left")
+				assert.NotEmpty(t, data.SongName, "Should extract song name from top-left")
+			},
+		},
+		{
+			name:     "test-center",
+			filepath: "../../../testdata/images/test-center.png",
+			validate: func(t *testing.T, data *db.CreateScoreData) {
+				// Should extract score and stars from center
+				// Note: OCR may not always extract perfectly, so we just check structure
+				assert.NotNil(t, data, "Should parse center image")
+			},
+		},
+		{
+			name:     "test-players",
+			filepath: "../../../testdata/images/test-players.png",
+			validate: func(t *testing.T, data *db.CreateScoreData) {
+				// Should extract player data
+				assert.Greater(t, len(data.Players), 0, "Should extract at least one player")
+			},
+		},
+		{
+			name:     "test-numbers",
+			filepath: "../../../testdata/images/test-numbers.png",
+			validate: func(t *testing.T, data *db.CreateScoreData) {
+				// Should handle various number formats
+				assert.NotNil(t, data, "Should parse numbers image")
+			},
+		},
+		{
+			name:     "test-difficulty",
+			filepath: "../../../testdata/images/test-difficulty.png",
+			validate: func(t *testing.T, data *db.CreateScoreData) {
+				// Should extract difficulty information
+				assert.NotNil(t, data, "Should parse difficulty image")
+			},
+		},
+		{
+			name:     "test-percentages",
+			filepath: "../../../testdata/images/test-percentages.png",
+			validate: func(t *testing.T, data *db.CreateScoreData) {
+				// Should extract percentage values
+				assert.NotNil(t, data, "Should parse percentages image")
+			},
+		},
+		{
+			name:     "test-complete",
+			filepath: "../../../testdata/images/test-complete.png",
+			validate: func(t *testing.T, data *db.CreateScoreData) {
+				// Should extract all elements
+				assert.NotEmpty(t, data.Artist, "Should extract artist")
+				assert.NotEmpty(t, data.SongName, "Should extract song name")
+				assert.NotNil(t, data.TotalScore, "Should extract total score")
+				assert.Greater(t, len(data.Players), 0, "Should extract players")
+			},
+		},
+		{
+			name:     "test-stars",
+			filepath: "../../../testdata/images/test-stars.png",
+			validate: func(t *testing.T, data *db.CreateScoreData) {
+				// Should extract star information
+				assert.NotNil(t, data, "Should parse stars image")
+			},
+		},
+		{
+			name:     "test-misses",
+			filepath: "../../../testdata/images/test-misses.png",
 			validate: func(t *testing.T, data *db.CreateScoreData) {
 				// Should extract miss information
 				assert.NotNil(t, data, "Should parse misses image")
-				assert.Equal(t, data.Players[0].NotesMissed, 79)
-				assert.Equal(t, data.Players[0].NotesMissed, 229)
 			},
 		},
-		// {
-		// 	name:     "test-large",
-		// 	filepath: "../../../testdata/images/test-large.png",
-		// 	validate: func(t *testing.T, data *db.CreateScoreData) {
-		// 		// Should handle large images (resized)
-		// 		assert.NotNil(t, data, "Should parse large image after resizing")
-		// 	},
-		// },
-		// {
-		// 	name:     "test-image-jpeg",
-		// 	filepath: "../../../testdata/images/test-image.jpg",
-		// 	validate: func(t *testing.T, data *db.CreateScoreData) {
-		// 		// JPEG images are not supported; expect an error/failure
-		// 		fmt.Printf("data: %v", data)
-		// 		assert.Nil(t, data, "JPEG images should not be parsed successfully (only PNG supported)")
-		// 	},
-		// },
+		{
+			name:     "test-large",
+			filepath: "../../../testdata/images/test-large.png",
+			validate: func(t *testing.T, data *db.CreateScoreData) {
+				// Should handle large images (resized)
+				assert.NotNil(t, data, "Should parse large image after resizing")
+			},
+		},
+		{
+			name:     "test-image-jpeg",
+			filepath: "../../../testdata/images/test-image.jpg",
+			validate: func(t *testing.T, data *db.CreateScoreData) {
+				// JPEG images are not supported; expect an error/failure
+				fmt.Printf("data: %v", data)
+				assert.Nil(t, data, "JPEG images should not be parsed successfully (only PNG supported)")
+			},
+		},
 	}
 
 	for _, tc := range testImages {
@@ -666,6 +656,58 @@ func testImage(t *testing.T, parser *Parser, imagePath string) image.Image {
 	require.NoError(t, err)
 
 	return img
+}
+
+func TestExtractTopLeftInfo(t *testing.T) {
+	testCases := []struct {
+		name             string
+		filepath         string
+		expectedArtist   string
+		expectedSongName string
+		expectedCharter  string
+	}{
+		{
+			name:             "all found with single charter",
+			filepath:         filepath.Join(_testImagePath, "images", "test-top-left.png"),
+			expectedArtist:   "The Beatles",
+			expectedSongName: "Hey Jude",
+			expectedCharter:  "_Pix",
+		},
+		{
+			name:             "none found",
+			filepath:         filepath.Join(_testImagePath, "images", "test-empty.png"),
+			expectedArtist:   "",
+			expectedSongName: "",
+			expectedCharter:  "",
+		},
+		{
+			name:             "test real screenshot",
+			filepath:         filepath.Join(_testImagePath, "scores", "clonehero-Tripping-Billies-20251209195440.png"),
+			expectedArtist:   "Dave Matthews Band",
+			expectedSongName: "Tripping Billies",
+			expectedCharter:  "SoConfined",
+		},
+		{
+			name:             "multiple charters",
+			filepath:         filepath.Join(_testImagePath, "images", "test-top-left-multiple-charters.png"),
+			expectedArtist:   "The Beatles",
+			expectedSongName: "Hey Jude",
+			expectedCharter:  "_Pix, FigNeutered, Onyxite, tomato",
+		},
+	}
+	for _, tC := range testCases {
+		t.Run(tC.name, func(t *testing.T) {
+			parser, close := newTestParser(t)
+			defer close()
+
+			img := testImage(t, parser, tC.filepath)
+			artist, songName, charter := parser.extractTopLeftInfo(img)
+
+			assert.Equal(t, tC.expectedArtist, artist)
+			assert.Equal(t, tC.expectedSongName, songName)
+			assert.Equal(t, tC.expectedCharter, charter)
+		})
+	}
 }
 
 func TestExtractTopLeftInfo_TestImage(t *testing.T) {

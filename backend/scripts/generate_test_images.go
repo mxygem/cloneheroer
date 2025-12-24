@@ -38,18 +38,19 @@ func main() {
 	fmt.Println("------------------------------------------------------------")
 
 	testImages := map[string]func() image.Image{
-		"test-top-left.png":    createTestTopLeft,
-		"test-center.png":      createTestCenter,
-		"test-players.png":     createTestPlayers,
-		"test-numbers.png":     createTestNumbers,
-		"test-difficulty.png":  createTestDifficulty,
-		"test-percentages.png": createTestPercentages,
-		"test-empty.png":       createTestEmpty,
-		"test-mixed.png":       createTestMixed,
-		"test-stars.png":       createTestStars,
-		"test-misses.png":      createTestMisses,
-		"test-complete.png":    createTestComplete,
-		"test-large.png":       createTestLarge,
+		"test-top-left.png":                   createTestTopLeft,
+		"test-top-left-multiple-charters.png": createTestTopLeft_MultipleCharters,
+		"test-center.png":                     createTestCenter,
+		"test-players.png":                    createTestPlayers,
+		"test-numbers.png":                    createTestNumbers,
+		"test-difficulty.png":                 createTestDifficulty,
+		"test-percentages.png":                createTestPercentages,
+		"test-empty.png":                      createTestEmpty,
+		"test-mixed.png":                      createTestMixed,
+		"test-stars.png":                      createTestStars,
+		"test-misses.png":                     createTestMisses,
+		"test-complete.png":                   createTestComplete,
+		"test-large.png":                      createTestLarge,
 	}
 
 	for filename, createFunc := range testImages {
@@ -82,9 +83,22 @@ func createTestTopLeft() image.Image {
 	dc.Clear()
 
 	// Top-left region: 0-30% width, 0-20% height
-	drawText(dc, 10, 40, "Hey Jude", 40)
-	drawText(dc, 10, 90, "The Beatles", 40)
-	drawText(dc, 10, 140, "_Pix", 40)
+	drawText(dc, width*9/100, height*10/100, "Hey Jude", 40)
+	drawText(dc, width*9/100, height*14/100, "The Beatles", 32)
+	drawText(dc, width*9/100, height*18/100, "_Pix", 32)
+
+	return dc.Image()
+}
+
+func createTestTopLeft_MultipleCharters() image.Image {
+	dc := gg.NewContext(width, height)
+	dc.SetRGB(0, 0, 0) // Black background
+	dc.Clear()
+
+	// Top-left region: 0-30% width, 0-20% height
+	drawText(dc, width*9/100, height*10/100, "Hey Jude", 40)
+	drawText(dc, width*9/100, height*14/100, "The Beatles", 32)
+	drawText(dc, width*9/100, height*18/100, "_Pix, FigNeutered, Onyxite, tomato", 32)
 
 	return dc.Image()
 }

@@ -271,10 +271,9 @@ func (p *Parser) extractTopLeftInfo(img image.Image) (artist, songName string, c
 	width := bounds.Dx()
 	height := bounds.Dy()
 
-	// Top left region: approximately first 30% of width, first 20% of height
-	left := 0
+	left := width * 7 / 100
 	top := 0
-	right := width * 30 / 100
+	right := width * 40 / 100
 	bottom := height * 20 / 100
 
 	region := cropImage(img, left, top, right, bottom)
@@ -295,7 +294,7 @@ func (p *Parser) extractTopLeftInfo(img image.Image) (artist, songName string, c
 	lines = filterEmpty(lines)
 
 	// Debug: log extracted lines to help diagnose issues
-	log.Printf("extracted top-left OCR lines (%d): %q", len(lines), lines)
+	log.Printf("extracted top-left OCR lines (%d): %q\n", len(lines), lines)
 
 	if len(lines) > 0 {
 		songName = strings.TrimSpace(lines[0])
@@ -307,10 +306,8 @@ func (p *Parser) extractTopLeftInfo(img image.Image) (artist, songName string, c
 		charter = strings.TrimSpace(lines[2])
 	}
 
-	// Validation: If songName is empty but artist is set, there might be an issue
-	// This could mean OCR only extracted one line, and we're not sure if it's artist or song
-	if artist != "" && songName == "" {
-		log.Printf("warning: extracted artist '%s' but no song name. OCR may have only detected one line.", artist)
+	if artist == "" || songName == "" || charter == "" {
+		log.Printf("warning: failed to extract one or more top-left data points: artist=%q, songName=%q, charter=%q\n", artist, songName, charter)
 	}
 
 	return
@@ -571,7 +568,6 @@ func (p *Parser) extractText(img image.Image) string {
 }
 
 // Helper functions
-
 func cropImage(img image.Image, left, top, right, bottom int) image.Image {
 	bounds := img.Bounds()
 	if left < bounds.Min.X {
@@ -589,7 +585,20 @@ func cropImage(img image.Image, left, top, right, bottom int) image.Image {
 
 	cropped := image.NewRGBA(image.Rect(0, 0, right-left, bottom-top))
 	draw.Draw(cropped, cropped.Bounds(), img, image.Pt(left, top), draw.Src)
+	// if err := saveImage(cropped, strconv.FormatInt(time.Now().UnixNano(), 10)+".png"); err != nil {
+	// 	log.Printf("failed to save cropped image: %v", err)
+	// }
+
 	return cropped
+}
+
+func saveImage(img image.Image, path string) error {
+	file, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	return png.Encode(file, img)
 }
 
 func filterEmpty(lines []string) []string {
