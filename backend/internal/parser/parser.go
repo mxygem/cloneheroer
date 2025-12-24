@@ -164,7 +164,7 @@ func (p *Parser) ParseImage(imagePath string) (*db.CreateScoreData, error) {
 		missingFields = append(missingFields, "song name")
 	}
 
-	if totalScore != nil {
+	if totalScore != 0 {
 		hasData = true
 	} else {
 		missingFields = append(missingFields, "total score")
@@ -266,7 +266,7 @@ func (p *Parser) loadImage(path string) (image.Image, error) {
 }
 
 // extractTopLeftInfo extracts artist, song name, and charter from top left of image.
-func (p *Parser) extractTopLeftInfo(img image.Image) (artist, songName string, charter *string) {
+func (p *Parser) extractTopLeftInfo(img image.Image) (artist, songName string, charter string) {
 	bounds := img.Bounds()
 	width := bounds.Dx()
 	height := bounds.Dy()
@@ -283,7 +283,7 @@ func (p *Parser) extractTopLeftInfo(img image.Image) (artist, songName string, c
 	regionBounds := region.Bounds()
 	if regionBounds.Dx() == 0 || regionBounds.Dy() == 0 {
 		log.Printf("warning: extracted region is empty (top-left: %dx%d)", regionBounds.Dx(), regionBounds.Dy())
-		return "", "", nil
+		return "", "", ""
 	}
 
 	text := p.extractText(region)
@@ -312,7 +312,7 @@ func (p *Parser) extractTopLeftInfo(img image.Image) (artist, songName string, c
 			c = strings.TrimSpace(c)
 		}
 		if c != "" {
-			charter = &c
+			charter = c
 		}
 	}
 
@@ -326,7 +326,7 @@ func (p *Parser) extractTopLeftInfo(img image.Image) (artist, songName string, c
 }
 
 // extractCenterInfo extracts total score and stars from center top of image.
-func (p *Parser) extractCenterInfo(img image.Image) (totalScore *int64, stars *int) {
+func (p *Parser) extractCenterInfo(img image.Image) (totalScore int64, stars int) {
 	bounds := img.Bounds()
 	width := bounds.Dx()
 	height := bounds.Dy()
@@ -350,7 +350,7 @@ func (p *Parser) extractCenterInfo(img image.Image) (totalScore *int64, stars *i
 		cleaned := regexp.MustCompile(`[^\d]`).ReplaceAllString(line, "")
 		if cleaned != "" {
 			if val, err := strconv.ParseInt(cleaned, 10, 64); err == nil {
-				totalScore = &val
+				totalScore = val
 				break
 			}
 		}
@@ -364,7 +364,7 @@ func (p *Parser) extractCenterInfo(img image.Image) (totalScore *int64, stars *i
 			matches := re.FindStringSubmatch(line)
 			if len(matches) > 1 {
 				if val, err := strconv.Atoi(matches[1]); err == nil {
-					stars = &val
+					stars = val
 					break
 				}
 			}
@@ -372,7 +372,7 @@ func (p *Parser) extractCenterInfo(img image.Image) (totalScore *int64, stars *i
 		// Also check for just a single digit (common pattern)
 		if len(strings.TrimSpace(line)) == 1 {
 			if val, err := strconv.Atoi(strings.TrimSpace(line)); err == nil && val >= 0 && val <= 7 {
-				stars = &val
+				stars = val
 				break
 			}
 		}
@@ -425,7 +425,7 @@ func (p *Parser) extractPlayers(img image.Image) []db.Player {
 			strings.Contains(strings.ToLower(line), "hard") ||
 			strings.Contains(strings.ToLower(line), "expert") {
 			d := normalizeDifficulty(line)
-			currentPlayer.Difficulty = &d
+			currentPlayer.Difficulty = d
 			continue
 		}
 
@@ -434,9 +434,7 @@ func (p *Parser) extractPlayers(img image.Image) []db.Player {
 			cleaned := regexp.MustCompile(`[^\d]`).ReplaceAllString(line, "")
 			if len(cleaned) > 3 { // Score is usually a large number
 				if val, err := strconv.ParseInt(cleaned, 10, 64); err == nil {
-					if currentPlayer.Score == nil {
-						currentPlayer.Score = &val
-					}
+					currentPlayer.Score = val
 				}
 			}
 		}
@@ -447,30 +445,51 @@ func (p *Parser) extractPlayers(img image.Image) []db.Player {
 			matches := re.FindStringSubmatch(line)
 			if len(matches) > 1 {
 				if val, err := strconv.ParseFloat(matches[1], 64); err == nil {
-					currentPlayer.Accuracy = &val
+					currentPlayer.Accuracy = val
 				}
 			}
 		}
 
 		// Look for misses
-		if strings.Contains(strings.ToLower(line), "miss") {
+		if strings.Contains(strings.ToLower(line), "notes missed") {
 			re := regexp.MustCompile(`(\d+)`)
 			matches := re.FindStringSubmatch(line)
 			if len(matches) > 1 {
 				if val, err := strconv.Atoi(matches[1]); err == nil {
-					currentPlayer.Misses = &val
+					currentPlayer.NotesMissed = val
 				}
 			}
 		}
 
 		// Look for combo/best streak
-		if strings.Contains(strings.ToLower(line), "combo") ||
-			strings.Contains(strings.ToLower(line), "streak") {
+		if strings.Contains(strings.ToLower(line), "best streak") {
 			re := regexp.MustCompile(`(\d+)`)
 			matches := re.FindStringSubmatch(line)
 			if len(matches) > 1 {
 				if val, err := strconv.Atoi(matches[1]); err == nil {
-					currentPlayer.Combo = &val
+					currentPlayer.BestStreak = val
+				}
+			}
+		}
+
+		// Look for overhits
+		if strings.Contains(strings.ToLower(line), "overhits") {
+			re := regexp.MustCompile(`(\d+)`)
+			matches := re.FindStringSubmatch(line)
+			if len(matches) > 1 {
+				if val, err := strconv.Atoi(matches[1]); err == nil {
+					currentPlayer.Overhits = val
+				}
+			}
+		}
+
+		// Look for avg multiplier
+		if strings.Contains(strings.ToLower(line), "avg multiplier") {
+			re := regexp.MustCompile(`(\d+\.?\d*)`)
+			matches := re.FindStringSubmatch(line)
+			if len(matches) > 1 {
+				if val, err := strconv.ParseFloat(matches[1], 64); err == nil {
+					currentPlayer.AvgMultiplier = val
 				}
 			}
 		}

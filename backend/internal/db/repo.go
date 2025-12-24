@@ -20,14 +20,14 @@ func NewRepo(pool *pgxpool.Pool) *Repo {
 
 // Score represents a stored score row.
 type Score struct {
-	ID           int64                  `json:"id"`
-	SongID       *int64                 `json:"song_id,omitempty"`
-	Artist       string                 `json:"artist"`
-	Charter      *string                `json:"charter,omitempty"`
-	TotalScore   *int64                 `json:"total_score,omitempty"`
-	StarsAchieved *int                  `json:"stars_achieved,omitempty"`
-	Players      map[string]any         `json:"players,omitempty"`
-	CreatedAt    time.Time              `json:"created_at"`
+	ID            int64          `json:"id"`
+	SongID        *int64         `json:"song_id,omitempty"`
+	Artist        string         `json:"artist"`
+	Charter       *string        `json:"charter,omitempty"`
+	TotalScore    *int64         `json:"total_score,omitempty"`
+	StarsAchieved *int           `json:"stars_achieved,omitempty"`
+	Players       map[string]any `json:"players,omitempty"`
+	CreatedAt     time.Time      `json:"created_at"`
 }
 
 // ListScores returns paginated scores.
@@ -247,25 +247,29 @@ func (r *Repo) UpdatePlayer(ctx context.Context, id int64, name *string, instrum
 
 // Player represents a player in a score.
 type Player struct {
-	Name       string   `json:"name"`
-	Instrument *string  `json:"instrument,omitempty"`
-	Difficulty *string  `json:"difficulty,omitempty"`
-	Score      *int64   `json:"score,omitempty"`
-	Combo      *int     `json:"combo,omitempty"`
-	Accuracy   *float64 `json:"accuracy,omitempty"`
-	Misses     *int     `json:"misses,omitempty"`
-	Rank       *int     `json:"rank,omitempty"`
+	Name          string  `json:"name"`
+	Instrument    string  `json:"instrument,omitempty"`
+	Difficulty    string  `json:"difficulty,omitempty"`
+	Score         int64   `json:"score,omitempty"`
+	Accuracy      float64 `json:"accuracy,omitempty"`
+	TotalNotes    int     `json:"total_notes,omitempty"`
+	NotesHit      int     `json:"notes_hit,omitempty"`
+	NotesMissed   int     `json:"notes_missed,omitempty"`
+	BestStreak    int     `json:"best_streak,omitempty"`
+	Overhits      int     `json:"overhits,omitempty"`
+	AvgMultiplier float64 `json:"avg_multiplier,omitempty"`
+	Rank          int     `json:"rank,omitempty"`
 }
 
 // CreateScoreData holds all data needed to create a score.
 type CreateScoreData struct {
-	Artist       string
-	SongName     string
-	Charter      *string
-	TotalScore   *int64
-	StarsAchieved *int
-	Players      []Player
-	CreatedAt    time.Time
+	Artist        string
+	SongName      string
+	Charter       string
+	TotalScore    int64
+	StarsAchieved int
+	Players       []Player
+	CreatedAt     time.Time
 }
 
 // CreateScore creates a new score with artist, song, and players.
@@ -291,12 +295,12 @@ func (r *Repo) CreateScore(ctx context.Context, data CreateScoreData) (int64, er
 	// Get or create song
 	var songID int64
 	var charters []string
-	if data.Charter != nil && *data.Charter != "" {
-		charters = []string{*data.Charter}
+	if data.Charter != "" && data.Charter != "" {
+		charters = []string{data.Charter}
 	} else {
 		charters = []string{}
 	}
-	
+
 	err = tx.QueryRow(ctx, `
 		INSERT INTO songs (name, artist_id, charters)
 		VALUES ($1, $2, $3)
@@ -308,11 +312,11 @@ func (r *Repo) CreateScore(ctx context.Context, data CreateScoreData) (int64, er
 	}
 
 	// Update charters array if charter is provided (add if not already present)
-	if data.Charter != nil && *data.Charter != "" {
+	if data.Charter != "" && data.Charter != "" {
 		_, err = tx.Exec(ctx, `
 			UPDATE songs SET charters = array_append(charters, $1)
 			WHERE id = $2 AND NOT ($1 = ANY(charters))
-		`, *data.Charter, songID)
+		`, data.Charter, songID)
 		if err != nil {
 			return 0, err
 		}
@@ -332,9 +336,9 @@ func (r *Repo) CreateScore(ctx context.Context, data CreateScoreData) (int64, er
 	// Create players
 	for _, p := range data.Players {
 		_, err = tx.Exec(ctx, `
-			INSERT INTO players (score_id, name, instrument, difficulty, score, combo, accuracy, misses, rank, created_at)
+			INSERT INTO players (score_id, name, instrument, difficulty, score, best_streak, accuracy, notes_missed, rank, created_at)
 			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-		`, scoreID, p.Name, p.Instrument, p.Difficulty, p.Score, p.Combo, p.Accuracy, p.Misses, p.Rank, data.CreatedAt)
+		`, scoreID, p.Name, p.Instrument, p.Difficulty, p.Score, p.BestStreak, p.Accuracy, p.NotesMissed, p.Rank, data.CreatedAt)
 		if err != nil {
 			return 0, err
 		}
@@ -346,4 +350,3 @@ func (r *Repo) CreateScore(ctx context.Context, data CreateScoreData) (int64, er
 
 	return scoreID, nil
 }
-
