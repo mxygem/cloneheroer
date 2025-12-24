@@ -82,9 +82,9 @@ func createTestTopLeft() image.Image {
 	dc.Clear()
 
 	// Top-left region: 0-30% width, 0-20% height
-	drawText(dc, 10, 40, "The Beatles", 40)
-	drawText(dc, 10, 90, "Hey Jude", 40)
-	drawText(dc, 10, 140, "Charter: Custom", 40)
+	drawText(dc, 10, 40, "Hey Jude", 40)
+	drawText(dc, 10, 90, "The Beatles", 40)
+	drawText(dc, 10, 140, "_Pix", 40)
 
 	return dc.Image()
 }
@@ -277,10 +277,10 @@ func createTestComplete() image.Image {
 	dc.SetRGB(0, 0, 0) // Black background
 	dc.Clear()
 
-	// Top-left: Artist, Song, Charter
-	drawText(dc, 10, 40, "The Beatles", 40)
-	drawText(dc, 10, 90, "Hey Jude", 40)
-	drawText(dc, 10, 140, "Charter: Custom", 40)
+	// Top-left: Song, Artist, Charter
+	drawText(dc, 10, 40, "Hey Jude", 40)
+	drawText(dc, 10, 90, "The Beatles", 40)
+	drawText(dc, 10, 140, "FigNeutered", 40)
 
 	// Center: Score and Stars
 	centerX := float64(width) / 2

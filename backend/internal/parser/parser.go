@@ -144,7 +144,7 @@ func (p *Parser) ParseImage(imagePath string) (*db.CreateScoreData, error) {
 	}
 
 	// Extract text from different regions
-	artist, songName, charter := p.extractTopLeftInfo(img)
+	songName, artist, charter := p.extractTopLeftInfo(img)
 	totalScore, stars := p.extractCenterInfo(img)
 	players := p.extractPlayers(img)
 
@@ -298,22 +298,13 @@ func (p *Parser) extractTopLeftInfo(img image.Image) (artist, songName string, c
 	log.Printf("extracted top-left OCR lines (%d): %q", len(lines), lines)
 
 	if len(lines) > 0 {
-		artist = strings.TrimSpace(lines[0])
+		songName = strings.TrimSpace(lines[0])
 	}
 	if len(lines) > 1 {
-		songName = strings.TrimSpace(lines[1])
+		artist = strings.TrimSpace(lines[1])
 	}
 	if len(lines) > 2 {
-		c := strings.TrimSpace(lines[2])
-		// Check if line contains "charter" keyword
-		if strings.HasPrefix(strings.ToLower(c), "charter") {
-			// Remove "charter:" prefix if present
-			c = strings.TrimPrefix(strings.TrimPrefix(c, "Charter:"), "charter:")
-			c = strings.TrimSpace(c)
-		}
-		if c != "" {
-			charter = c
-		}
+		charter = strings.TrimSpace(lines[2])
 	}
 
 	// Validation: If songName is empty but artist is set, there might be an issue
