@@ -85,7 +85,7 @@ func main() {
 	if err := fileWatcher.Start(ctx); err != nil {
 		log.Fatalf("failed to start watcher: %v", err)
 	}
-	log.Printf("watching directory: %s", cfg.WatchDir)
+	log.Printf("watching directory: %q", cfg.WatchDir)
 
 	// Start HTTP server
 	srv := server.New(repo)
